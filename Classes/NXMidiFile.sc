@@ -1,7 +1,39 @@
 NXMidiFile {
+    classvar <>cmd;
     var eventList, bpm, timeSig;
+    var jsonPath;
 
     *new {arg eventList, bpm=60, timeSig="4/4";
+        ^super.new.init(eventList, bpm, timeSig);
+    }
+
+    *initClass {
+        // expected to be in $PATH, but can be set to custom path
+        cmd = "json2midi";
+    }
+
+    init {arg ... args;
+        // write json to /tmp by default
+        jsonPath = NXJsonFileWriter(*args).write;
+    }
+
+    write {arg path;
+        var exe = cmd ++ " --input % --output %";
+        path = path.standardizePath;
+        exe.format(jsonPath, path).unixCmd {arg res, pid;
+            if (res == 0) {
+                "Wrote MIDI file to: %\n".postf(path);
+            } {
+                "Error writing file".error;
+            }
+        };
+    }
+}
+
+NXJsonFileWriter {
+    var eventList, bpm, timeSig;
+
+    *new {arg eventList, bpm, timeSig;
         ^super.newCopyArgs(eventList, bpm, timeSig);
     }
 
@@ -34,7 +66,6 @@ NXMidiFile {
         file.write("]]");
         file.write("}");
         file.close;
-
-        "Wrote file to: %\n".postf(path);
+        ^path;
     }
 }
