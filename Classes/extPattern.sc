@@ -1,11 +1,7 @@
 + Pattern {
-    writeMIDIFile {arg duration=1, path, cmd, clock(TempoClock.default);
+    writeMIDIFile {arg duration=1, path, clock(TempoClock.default);
         var eventList = this.eventList(duration);
         var bpm = 60 * clock.tempo;
-
-        if (cmd.isString) {
-            NXMidiFile.cmd = cmd;
-        };
 
         NXMidiFile(eventList, bpm).write(path);
     }
