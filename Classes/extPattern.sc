@@ -1,12 +1,12 @@
 + Pattern {
     writeMIDIFile {arg duration=1, path, clock(TempoClock.default);
-        var eventList = this.eventList(duration);
+        var eventList = this.asEventList(duration);
         var bpm = 60 * clock.tempo;
 
         NXMidiFile(eventList, bpm).write(path);
     }
 
-    eventList {arg duration=1, protoEvent, clock, timeOffset=0;
+    asEventList {arg duration=1, protoEvent, clock, timeOffset=0;
         var beats, tempo, maxTime;
 
         var eventList = [];
