@@ -9,7 +9,7 @@
             if (value.isNumber.not) {
                 value = value.asString.quote;
             };
-            json = json ++ "\"%\": %% ".format(key, value, comma);
+            json = json ++ "\"%\":%%".format(key, value, comma);
         };
 
         getValue = {arg key;
