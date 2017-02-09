@@ -6,20 +6,16 @@
         NXMidiFile(eventList, bpm).write(path);
     }
 
-    eventList {arg duration=10, eventPrototype, clock;
-        var event, beats, tempo, maxTime;
-        var timeOffset = 0;
+    eventList {arg duration=1, protoEvent, clock, timeOffset=0;
+        var beats, tempo, maxTime;
+
         var eventList = [];
         var stream = this.asStream;
-        var proto = eventPrototype ?? { () };
+        var proto = protoEvent ?? { Event.default };
 
-        event = event ? Event.default;
-        event = event.copy.putAll(proto);
         beats = timeOffset;
-
         clock = clock ?? { TempoClock.default };
         tempo = clock.tempo;
-
         maxTime = timeOffset + duration;
 
         Routine {
@@ -27,17 +23,17 @@
             thisThread.clock = clock;
             while ({
                 thisThread.beats = beats;
-                ev = stream.next(event.copy);
+                ev = stream.next(proto.copy);
                 (maxTime >= beats) and:{ev.notNil}
             }, {
-                ev.putAll(proto);
                 if (ev.isRest.not) {
-                    eventList = eventList.add([ beats, ev ]);
+                    eventList = eventList.add(
+                        [ ev.timingOffset * tempo.reciprocal + ev.lag + beats, ev ]
+                    );
                 };
                 beats = ev.delta * tempo.reciprocal + beats
             })
         }.next;
-
         ^eventList;
     }
 }
