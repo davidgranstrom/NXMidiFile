@@ -13,7 +13,7 @@
         };
 
         getValue = {arg key;
-            Event.default.use {|e| e.perform(key); };
+            this.use {|f| f.perform(key); };
         };
 
         // json2midi types
