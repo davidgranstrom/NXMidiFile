@@ -1,7 +1,8 @@
 + Event {
     toJSON {arg defaultEventValues;
-        var addKeyValuePair, getValue, lastValue;
-        var json = "{ "; // start json object
+        var addKeyValuePair, getValue, lastValue, validKeys;
+        var filteredEvent;
+        var json = "{"; // start json object
 
         addKeyValuePair = {|key, value, lastValue=false|
             var comma = lastValue.not.if(",", "");
@@ -15,21 +16,35 @@
             this.use {|f| f.perform(key); };
         };
 
+        // json2midi types
+        validKeys = #[
+            eventType,
+            absTime,
+            midinote,
+            channel,
+            velocity,
+            duration,
+            ccNum,
+            ccVal,
+        ];
+
         defaultEventValues = defaultEventValues ?? { #[ midinote, velocity ] };
 
-        if (this.keys.isEmpty.not) {
-            lastValue = this.size - 1;
+        // only select the keys that makes sense for midi2json
+        filteredEvent = this.select {|item, key| validKeys.includes(key) };
+        defaultEventValues = defaultEventValues.reject {|key| filteredEvent.keys.includes(key) };
+
+        if (filteredEvent.isEmpty.not) {
+            lastValue = filteredEvent.size - 1;
         } {
             lastValue = defaultEventValues.size - 1;
         };
 
-        // write coerced values
         defaultEventValues.do {arg key, i;
             addKeyValuePair.(key, getValue.(key), i == lastValue);
         };
 
-        // add the values defined in the event
-        this.keysValuesDo {arg key, value, i;
+        filteredEvent.keysValuesDo {arg key, value, i;
             addKeyValuePair.(key, value, i == lastValue);
         };
 
