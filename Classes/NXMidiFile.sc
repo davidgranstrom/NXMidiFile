@@ -59,7 +59,7 @@ NXJsonFileWriter {
             var comma = (idx == lastEvent).if("", ",");
             event.absTime = delta;
             event.duration = event.use {|ev| ev.sustain / (bpm/60) };
-            file.write(event.toJSON ++ comma);
+            file.write(event.asJson2midiEvent ++ comma);
             idx = idx + 1;
         };
 

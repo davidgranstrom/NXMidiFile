@@ -1,5 +1,5 @@
 + Event {
-    toJSON {arg defaultEventValues;
+    asJson2midiEvent {arg defaultEventValues;
         var addKeyValuePair, getValue, lastValue, validKeys;
         var filteredEvent;
         var json = "{"; // start json object
