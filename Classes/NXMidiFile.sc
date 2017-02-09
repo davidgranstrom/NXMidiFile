@@ -58,7 +58,7 @@ NXJsonFileWriter {
         [ deltas, events ].flopWith {|delta, event|
             var comma = (idx == lastEvent).if("", ",");
             event.absTime = delta;
-            event.duration = event.use {|ev| ev.sustain };
+            event.duration = event.use {|ev| ev.sustain / (bpm/60) };
             file.write(event.toJSON ++ comma);
             idx = idx + 1;
         };
